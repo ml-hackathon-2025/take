@@ -16,7 +16,7 @@ const InventoryPage: React.FC = () => {
     if (isLoading) return <div>Loading…</div>;
     return (
         <div className="space-y-4">
-            <h1 className="text-2xl font-semibold">Inventory</h1>
+            <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Inventory</h1>
             {/* If backend gives totals per type, render badges here */}
             <DataTable data={data} columns={columns} />
         </div>

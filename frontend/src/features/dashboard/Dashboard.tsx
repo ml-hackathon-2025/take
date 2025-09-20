@@ -11,7 +11,7 @@ const DashboardPage: React.FC = () => {
 
     return (
         <div className="space-y-4">
-            <h1 className="text-2xl font-semibold">Dashboard</h1>
+            <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Dashboard</h1>
             <div className="grid grid-cols-4 gap-4">
                 <KPICard title="Total devices" value={total} />
                 <KPICard title="Available" value={available} />
