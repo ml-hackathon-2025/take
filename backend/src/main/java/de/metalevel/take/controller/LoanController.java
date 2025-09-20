@@ -31,4 +31,12 @@ public class LoanController {
     public List<LoanDTO> getLoans(@RequestParam(required = false) String status) {
         return loanService.getLoans(status);
     }
+
+    @RestController
+    public static class HealthController {
+        @GetMapping("/health")
+        public String health() {
+            return "OK";
+        }
+    }
 }
