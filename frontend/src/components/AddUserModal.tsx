@@ -38,7 +38,8 @@ const AddUserModal: React.FC<Props> = ({ open, onClose, onCreated }) => {
                 <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100">Add user</h3>
 
                 <label className="block text-sm text-gray-900 dark:text-gray-100">Name</label>
-                <input className="w-full border rounded p-2" value={name} onChange={(e) => setName(e.target.value)} />
+                <input className="w-full border rounded p-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
+                    value={name} onChange={(e) => setName(e.target.value)} />
 
                 <label className="block text-sm text-gray-900 dark:text-gray-100">Role</label>
                 <select className="w-full border bg-gray-100 dark:bg-gray-700 rounded p-2 text-gray-900 dark:text-gray-100" value={role} onChange={e => setRole(e.target.value as any)}>
