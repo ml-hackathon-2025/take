@@ -2,7 +2,7 @@ import React from 'react'
 import { useDevices } from '../../hooks/useInventory';
 import KPICard from '../../components/KPICard';
 
-const Dashboard: React.FC = () => {
+const DashboardPage: React.FC = () => {
     const { data = [] } = useDevices();
     const total = data.length;
     const borrowed = data.filter(d => !d.available).length;
@@ -22,4 +22,4 @@ const Dashboard: React.FC = () => {
     );
 }
 
-export default Dashboard;
+export default DashboardPage;
