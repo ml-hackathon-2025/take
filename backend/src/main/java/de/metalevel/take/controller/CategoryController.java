@@ -18,6 +18,16 @@ public class CategoryController {
         return categoryService.getAll();
     }
 
+    @GetMapping("/{id}")
+    public CategoryDTO getOne(@PathVariable Long id){
+        return categoryService.getOne(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteCategory(@PathVariable Long id){
+        categoryService.deleteCategory(id);
+    }
+
 
     @PostMapping
     public CategoryDTO createCategory(@RequestBody CategoryDTO dto) {
