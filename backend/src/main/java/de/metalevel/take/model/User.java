@@ -17,7 +17,7 @@ public class User {
     @Id
     @Size(max = 255)
     @Column(name = "id", nullable = false)
-    private String id;
+    private Long id;
 
     @Column(name = "created_at")
     private Instant createdAt;
@@ -26,12 +26,8 @@ public class User {
     private Instant updatedAt;
 
     @Size(max = 255)
-    @Column(name = "password")
-    private String password;
-
-    @Size(max = 255)
-    @Column(name = "username")
-    private String username;
+    @Column(name = "name")
+    private String name;
 
     @Lob
     @Column(name = "role")
