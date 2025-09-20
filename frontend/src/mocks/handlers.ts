@@ -95,4 +95,15 @@ export const handlers = [
             return HttpResponse.json({ message: e?.message ?? "Return failed" }, { status: 400 });
         }
     }),
+
+    // Create user
+    http.post(`${BASE}/users`, async ({ request }) => {
+        const body = await request.json() as Partial<{ name: string; userRole: "ADMIN" | "WORKER" }>;
+        if (!body.name || !body.userRole) return HttpResponse.json({ message: "Invalid payload" }, { status: 400 });
+
+        const id = Math.max(...users.map((u: any) => Number(u.id))) + 1;
+        const user = { id, name: body.name, userRole: body.userRole };
+        users.push(user);
+        return HttpResponse.json(user, { status: 201 });
+    }),
 ];

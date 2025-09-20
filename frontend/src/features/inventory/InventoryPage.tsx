@@ -1,26 +1,39 @@
 import React from 'react'
 import { useDevices } from '../../hooks/useInventory';
-import type { Device } from '../../types';
-import type { ColumnDef } from '@tanstack/react-table';
 import { Link } from 'react-router';
-import DataTable from '../../components/DataTable';
+import UnifiedTable from '../../components/DataTable';
 
 const InventoryPage: React.FC = () => {
-    const { data = [], isLoading } = useDevices();
-    const columns: ColumnDef<Device>[] = [
-        { header: "Name", cell: ({ row }) => <Link className="underline" to={`/devices/${row.original.id}`}>{row.original.name}</Link> },
-        { header: "Brand", cell: ({ row }) => row.original.brand ?? '—' },
-        { header: "Status", cell: ({ row }) => row.original.available ? 'Available' : 'Borrowed' },
-        { header: "Due", cell: ({ row }) => row.original.dueDate ?? '—' },
-    ];
-    if (isLoading) return <div>Loading…</div>;
-    return (
-        <div className="space-y-4">
-            <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Inventory</h1>
-            {/* If backend gives totals per type, render badges here */}
-            <DataTable data={data} columns={columns} />
-        </div>
-    );
+        const { data = [], isLoading } = useDevices();
+        if (isLoading) return <div>Loading…</div>;
+                return (
+                        <div className="space-y-4">
+                                <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Inventory</h1>
+                                {/* If backend gives totals per type, render badges here */}
+                                <UnifiedTable
+                                    columns={[
+                                        {
+                                            header: 'Name',
+                                            render: (device) => <Link className="underline" to={`/devices/${device.id}`}>{device.name}</Link>
+                                        },
+                                        {
+                                            header: 'Brand',
+                                            render: (device) => device.brand ?? '—'
+                                        },
+                                        {
+                                            header: 'Status',
+                                            render: (device) => device.available ? 'Available' : 'Borrowed'
+                                        },
+                                        {
+                                            header: 'Due',
+                                            render: (device) => device.dueDate ?? '—'
+                                        }
+                                    ]}
+                                    data={data}
+                                    emptyText="No items"
+                                />
+                        </div>
+                );
 }
 
 export default InventoryPage;
