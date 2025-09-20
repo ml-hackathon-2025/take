@@ -16,7 +16,7 @@ import java.util.Set;
 public class DeviceType {
     @Id
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @NotNull
     @Column(name = "max_window_days", nullable = false)
