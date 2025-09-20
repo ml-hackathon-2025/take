@@ -20,33 +20,20 @@ public class DeviceTypeService {
     public Set<DeviceTypeDTO> findByCategory(String categoryName) {
         return deviceTypeRepository.findByCategoryName(categoryName)
                 .stream()
-                .map(deviceType -> DeviceTypeDTO.builder()
-                        .id(deviceType.getId())
-                        .name(deviceType.getName())
-                        .description(deviceType.getDescription())
-                        .build())
+                .map(this::mapToDTO)
                 .collect(Collectors.toSet());
     }
 
     public List<DeviceTypeDTO> getAll(){
         return deviceTypeRepository.findAll()
                 .stream()
-                .map(deviceType -> DeviceTypeDTO.builder()
-                        .id(deviceType.getId())
-                        .name(deviceType.getName())
-                        .description(deviceType.getDescription())
-                        .build())
+                .map(this::mapToDTO)
                 .toList();
     }
 
     public DeviceTypeDTO getOne(Long id){
         return deviceTypeRepository.findById(id)
-                .map(deviceType -> new DeviceTypeDTO(
-                        deviceType.getId(),
-                        deviceType.getName(),
-                        deviceType.getMaxWindowDays(),
-                        deviceType.getDescription()
-                ))
+                .map(this::mapToDTO)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "DeviceType not found"));
     }
 
@@ -59,6 +46,14 @@ public class DeviceTypeService {
 
         entity = deviceTypeRepository.save(entity);
 
-        return new DeviceTypeDTO(entity.getId(), entity.getName(), entity.getMaxWindowDays(), entity.getDescription());
+        return mapToDTO(entity);
+    }
+
+    public DeviceTypeDTO mapToDTO(DeviceType deviceType){
+        return DeviceTypeDTO.builder()
+                .id(deviceType.getId())
+                .name(deviceType.getName())
+                .description(deviceType.getDescription())
+                .build();
     }
 }

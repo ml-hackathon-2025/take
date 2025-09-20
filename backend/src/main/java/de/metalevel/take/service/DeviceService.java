@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.List;
 
 
@@ -22,31 +21,13 @@ public class DeviceService {
     public List<DeviceDTO> getAll(){
         return deviceRepository.findAll()
                 .stream()
-                .map(device -> DeviceDTO.builder()
-                        .id(device.getId())
-                        .name(device.getName())
-                        .brand(device.getBrand())
-                        .available(device.getAvailable())
-                        .borrowedDate(Instant.from(device.getBorrowedDate()))
-                        .qrLink(device.getQrLink())
-                        .deviceTypeId(device.getDeviceType().getId())
-                        .userId(device.getUser().getId())
-                        .build())
+                .map(this::mapToDTO)
                 .toList();
     }
 
     public DeviceDTO getOne(Long id){
         return deviceRepository.findById(id)
-                .map(device -> DeviceDTO.builder()
-                        .id(device.getId())
-                        .name(device.getName())
-                        .brand(device.getBrand())
-                        .available(device.getAvailable())
-                        .borrowedDate(Instant.from(device.getBorrowedDate()))
-                        .qrLink(device.getQrLink())
-                        .deviceTypeId(device.getDeviceType().getId())
-                        .userId(device.getUser().getId())
-                        .build())
+                .map(this::mapToDTO)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "DeviceType not found"));
     }
 
@@ -61,14 +42,7 @@ public class DeviceService {
 
         device = deviceRepository.save(device);
 
-        return new DeviceDTO(device.getId(),
-                device.getName(),
-                device.getBrand(),
-                device.getDeviceType().getId(),
-                device.getAvailable(),
-                device.getBorrowedDate(),
-                device.getQrLink(),
-                device.getUser().getId());
+        return mapToDTO(device);
     }
 
     public DeviceDTO update(Long id, DeviceDTO dto) {
@@ -86,14 +60,19 @@ public class DeviceService {
         }
 
         device = deviceRepository.save(device);
-        return new DeviceDTO(device.getId(),
-                device.getName(),
-                device.getBrand(),
-                device.getDeviceType().getId(),
-                device.getAvailable(),
-                device.getBorrowedDate(),
-                device.getQrLink(),
-                device.getUser().getId());
+        return mapToDTO(device);
+    }
+    private DeviceDTO mapToDTO(Device device) {
+        return DeviceDTO.builder()
+                .id(device.getId())
+                .name(device.getName())
+                .brand(device.getBrand())
+                .available(device.getAvailable())
+                .borrowedDate(Instant.from(device.getBorrowedDate()))
+                .qrLink(device.getQrLink())
+                .deviceTypeId(device.getDeviceType().getId())
+                .userId(device.getUser().getId())
+                .build();
     }
 
 
