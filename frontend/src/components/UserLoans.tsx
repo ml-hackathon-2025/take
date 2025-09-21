@@ -1,18 +1,33 @@
+import { getDeviceById } from "../services/deviceService";
 import { useEffect, useState } from "react";
 import * as userService from "../services/userService";
 import type { Loan } from "../services/userService";
 import { useParams } from "react-router-dom";
 
+type LoanWithDeviceName = Loan & { deviceName: string };
+
 export default function UserLoans() {
   const { id } = useParams();
-  const [loans, setLoans] = useState<Loan[]>([]);
+  const [loans, setLoans] = useState<LoanWithDeviceName[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
     userService.getUserLoans(Number(id))
-      .then((data) => setLoans(data))
+      .then(async (data) => {
+        const loansWithNames = await Promise.all(
+          data.map(async (loan) => {
+            try {
+              const device = await getDeviceById(loan.deviceId);
+              return { ...loan, deviceName: device.name };
+            } catch (err) {
+              return { ...loan, deviceName: `Gerät #${loan.deviceId}` };
+            }
+          })
+        );
+        setLoans(loansWithNames as LoanWithDeviceName[]);
+      })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, [id]);
@@ -38,7 +53,7 @@ export default function UserLoans() {
           <tbody>
             {loans.map((loan) => (
               <tr key={loan.id}>
-                <td>{loan.deviceId}</td>
+                <td>{loan.deviceName}</td>
                 <td>{new Date(loan.borrowedDate).toLocaleDateString()}</td>
                 <td>{new Date(loan.dueDate).toLocaleDateString()}</td>
                 <td>{loan.returned ? "Zurückgegeben" : "Aktiv"}</td>
