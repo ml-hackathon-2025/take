@@ -56,7 +56,7 @@ public class StockItemService {
         return StockItemDTO.builder()
                 .id(stockItem.getId())
                 .sku(stockItem.getSku())
-                .deviceId(stockItem.getDevice().getId())
+                .deviceName(stockItem.getDevice().getName())
                 .build();
     }
 

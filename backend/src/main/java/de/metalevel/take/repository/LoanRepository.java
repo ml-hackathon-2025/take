@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface LoanRepository extends JpaRepository<Loan, Integer> {
     List<Loan> findByReturnedFalse();
-    List<Loan> findByUserId(final String userId);
+    List<Loan> findByUserIdAndReturnedFalse(final String userId);
 }

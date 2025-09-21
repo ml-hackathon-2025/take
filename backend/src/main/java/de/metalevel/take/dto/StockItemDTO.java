@@ -8,6 +8,5 @@ import java.time.LocalDate;
 public record StockItemDTO(
         Long id,
         String sku,
-        Integer deviceId,
-        String userId
+        String deviceName
 ) {}

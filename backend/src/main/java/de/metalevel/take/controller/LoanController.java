@@ -1,5 +1,6 @@
 package de.metalevel.take.controller;
 
+import de.metalevel.take.dto.BorrowReq;
 import de.metalevel.take.dto.LoanDTO;
 import de.metalevel.take.service.LoanService;
 import lombok.AllArgsConstructor;
@@ -16,10 +17,10 @@ public class LoanController {
     private final LoanService loanService;
 
     @PostMapping("/borrow")
-    public LoanDTO borrow(@RequestParam Long deviceId,
-                          @RequestParam Long userId,
-                          @RequestParam String dueDate) {
-        return loanService.borrow(deviceId, userId, Instant.parse(dueDate));
+    public LoanDTO borrow(@RequestBody BorrowReq borrowReq) {
+        return loanService.borrow(borrowReq.stockItemId(), borrowReq.username(), Instant.parse(
+                borrowReq.dueDate()
+        ));
     }
 
     @PostMapping("/return")
@@ -28,7 +29,7 @@ public class LoanController {
     }
 
     @GetMapping
-    public List<LoanDTO> getLoans(@RequestParam(required = false) String status) {
+    public List<LoanDTO> getLoans(@RequestParam(required = false, defaultValue = "") String status) {
         return loanService.getLoans(status);
     }
 }

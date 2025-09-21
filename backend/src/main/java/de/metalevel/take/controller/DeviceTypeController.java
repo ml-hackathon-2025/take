@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
-@RequestMapping("device-type")
+@RequestMapping("/api/device-type")
 @AllArgsConstructor
 public class DeviceTypeController {
     private final DeviceService deviceService;

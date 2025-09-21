@@ -32,4 +32,6 @@ public class StockItem {
     @JoinColumn(name = "device_id", nullable = false)
     private Device device;
 
+
+
 }

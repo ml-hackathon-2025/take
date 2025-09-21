@@ -8,10 +8,7 @@ import java.util.Set;
 
 @Builder
 public record UserDTO(
-        String id,
         String username,
         UserRole userRole,
-        Instant createdAt,
-        Instant updatedAt,
-        Set<StockItem> devices
+        Set<StockItemDTO> stockItems
 ) {}

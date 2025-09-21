@@ -3,10 +3,8 @@ package de.metalevel.take.service;
 import de.metalevel.take.dto.LoanDTO;
 import de.metalevel.take.model.Loan;
 import de.metalevel.take.model.StockItem;
-import de.metalevel.take.model.User;
 import de.metalevel.take.repository.LoanRepository;
 import de.metalevel.take.repository.StockItemRepository;
-import de.metalevel.take.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -22,9 +20,8 @@ public class LoanService {
 
     private final LoanRepository loanRepository;
     private final StockItemRepository stockItemRepository;
-    private final UserRepository userRepository;
 
-    public LoanDTO borrow(Long deviceId, Long userId, Instant dueDate) {
+    public LoanDTO borrow(Long deviceId, String username, Instant dueDate) {
         // First, retrieve the stockItem or throw if not found
         StockItem stockItem = stockItemRepository.findById(deviceId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Device not found"));
@@ -43,16 +40,13 @@ public class LoanService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Device not available");
         }
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-
         // Gerät blockieren
         stockItem.setAvailable(false);
         stockItemRepository.save(stockItem);
 
         Loan loan = new Loan();
         loan.setStockItem(stockItem);
-        loan.setUser(user);
+        loan.setUserId(username);
         loan.setBorrowedDate(Instant.now());
         loan.setDueDate(dueDate);
         loan.setReturned(false);
@@ -91,7 +85,7 @@ public class LoanService {
         return LoanDTO.builder()
                 .id(loan.getId())
                 .stockItemId(loan.getStockItem().getId())
-                .userId(loan.getUser().getId())
+                .userId(loan.getUserId())
                 .borrowedDate(loan.getBorrowedDate())
                 .dueDate(loan.getDueDate())
                 .returned(loan.getReturned())

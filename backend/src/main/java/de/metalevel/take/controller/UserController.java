@@ -20,14 +20,9 @@ public class UserController {
         return userService.getAll();
     }
 
-    @GetMapping("/{id}")
-    public UserDTO getOne(@PathVariable Long id) {
-        return userService.getOne(id);
-    }
-
-    @PostMapping
-    public UserDTO create(@RequestBody UserDTO dto) {
-        return userService.create(dto);
+    @GetMapping("/{username}")
+    public UserDTO getOne(@PathVariable String username) {
+        return userService.getOne(username);
     }
 
     @GetMapping("/{id}/loans")

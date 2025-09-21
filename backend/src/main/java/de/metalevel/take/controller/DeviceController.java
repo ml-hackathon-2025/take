@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/devices")
+@RequestMapping("/api/devices")
 @AllArgsConstructor
 public class DeviceController {
     private final StockItemService stockItemService;
