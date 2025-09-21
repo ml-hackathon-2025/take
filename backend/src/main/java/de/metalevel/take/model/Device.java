@@ -6,7 +6,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.Instant;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -14,35 +15,33 @@ import java.time.Instant;
 @Table(name = "device")
 public class Device {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
 
-    @Column(name = "available")
-    private Boolean available;
-
+    @Size(max = 255)
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "device_type_id", nullable = false)
-    private de.metalevel.take.model.DeviceType deviceType;
-
-    @Column(name = "borrowed_date")
-    private Instant borrowedDate;
-
-    @Size(max = 255)
-    @Column(name = "brand")
-    private String brand;
-
-    @Size(max = 255)
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Size(max = 255)
-    @Column(name = "qr_link")
-    private String qrLink;
+    @Column(name = "description")
+    private String description;
+
+    @Size(max = 45)
+    @Column(name = "brand", length = 45)
+    private String brand;
+
+    @NotNull
+    @Column(name = "max_window_days", nullable = false)
+    private Integer maxWindowDays;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    private de.metalevel.take.model.User user;
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
+
+    @OneToMany(mappedBy = "device")
+    private Set<StockItem> stockItems = new LinkedHashSet<>();
 
 }

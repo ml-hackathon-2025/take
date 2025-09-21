@@ -1,7 +1,7 @@
 package de.metalevel.take.controller;
 
-import de.metalevel.take.dto.DeviceDTO;
-import de.metalevel.take.service.DeviceService;
+import de.metalevel.take.dto.StockItemDTO;
+import de.metalevel.take.service.StockItemService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,19 +11,19 @@ import java.util.List;
 @RequestMapping("/devices")
 @AllArgsConstructor
 public class DeviceController {
-    private final DeviceService deviceService;
+    private final StockItemService stockItemService;
 
     @GetMapping
-    public List<DeviceDTO> getAll() { return deviceService.getAll(); }
+    public List<StockItemDTO> getAll() { return stockItemService.getAll(); }
 
     @GetMapping("/{id}")
-    public DeviceDTO getOne(@PathVariable Long id) { return deviceService.getOne(id); }
+    public StockItemDTO getOne(@PathVariable Long id) { return stockItemService.getOne(id); }
 
     @PostMapping
-    public DeviceDTO create(@RequestBody DeviceDTO dto) { return deviceService.create(dto); }
+    public StockItemDTO create(@RequestBody StockItemDTO dto) { return stockItemService.create(dto); }
 
     @PatchMapping("/{id}")
-    public DeviceDTO update(@PathVariable Long id, @RequestBody DeviceDTO dto) {
-        return deviceService.update(id, dto);
+    public StockItemDTO update(@PathVariable Long id, @RequestBody StockItemDTO dto) {
+        return stockItemService.update(id, dto);
     }
 }

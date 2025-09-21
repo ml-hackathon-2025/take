@@ -31,7 +31,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/loans")
-    public List<LoanDTO> getLoans(@PathVariable Long id) {
+    public List<LoanDTO> getLoans(@PathVariable String id) {
         return userService.getLoans(id);
     }
 }

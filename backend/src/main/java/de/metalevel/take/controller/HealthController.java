@@ -1,4 +1,4 @@
-package de.metalevel.take.service;
+package de.metalevel.take.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

@@ -1,6 +1,6 @@
 package de.metalevel.take.dto;
 
-import de.metalevel.take.model.Device;
+import de.metalevel.take.model.StockItem;
 import lombok.Builder;
 
 import java.time.Instant;
@@ -8,10 +8,10 @@ import java.util.Set;
 
 @Builder
 public record UserDTO(
-        Long id,
-        String name,
-        String userRole,
+        String id,
+        String username,
+        UserRole userRole,
         Instant createdAt,
         Instant updatedAt,
-        Set<Device> devices
+        Set<StockItem> devices
 ) {}

@@ -6,14 +6,13 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.time.LocalDate;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "category")
-public class Category {
+@Table(name = "stock_item")
+public class StockItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -21,10 +20,16 @@ public class Category {
 
     @Size(max = 255)
     @NotNull
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "sku", nullable = false)
+    private String sku;
 
-    @OneToMany(mappedBy = "category")
-    private Set<Device> devices = new LinkedHashSet<>();
+    @NotNull
+    @Column(name = "available", nullable = false)
+    private Boolean available;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "device_id", nullable = false)
+    private Device device;
 
 }

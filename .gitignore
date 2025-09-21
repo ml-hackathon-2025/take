@@ -1,3 +1,6 @@
 # Credentials and env variables
 
 .env
+
+# Binaries
+.DS_Store

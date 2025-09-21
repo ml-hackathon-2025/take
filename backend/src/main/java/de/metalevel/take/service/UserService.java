@@ -2,6 +2,7 @@ package de.metalevel.take.service;
 
 import de.metalevel.take.dto.LoanDTO;
 import de.metalevel.take.dto.UserDTO;
+import de.metalevel.take.model.Loan;
 import de.metalevel.take.model.User;
 import de.metalevel.take.repository.LoanRepository;
 import de.metalevel.take.repository.UserRepository;
@@ -10,9 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.Instant;
-
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -36,24 +36,21 @@ public class UserService {
 
     public UserDTO create(UserDTO dto) {
         User user = new User();
-        user.setName(dto.name());
         user.setRole(dto.userRole());
-        user.setCreatedAt(Instant.now());
-        user.setUpdatedAt(Instant.now());
 
         user = userRepository.save(user);
         return mapToDTO(user);
     }
 
-    public List<LoanDTO> getLoans(Long userId) {
+    public List<LoanDTO> getLoans(String userId) {
         return loanRepository.findByUserId(userId).stream()
-                .map(loan -> LoanDTO.builder()
-                        .id(loan.getId())
-                        .deviceId(loan.getDevice().getId())
-                        .userId(loan.getUser().getId())
-                        .borrowedDate(loan.getBorrowedDate())
-                        .dueDate(loan.getDueDate())
-                        .returned(loan.isReturned())
+                .map(stockItem -> LoanDTO.builder()
+                        .id(stockItem.getId())
+                        .stockItemId(stockItem.getStockItem().getId())
+                        .userId(stockItem.getUser().getId())
+                        .borrowedDate(stockItem.getBorrowedDate())
+                        .dueDate(stockItem.getDueDate())
+                        .returned(stockItem.getReturned())
                         .build())
                 .toList();
     }
@@ -61,11 +58,11 @@ public class UserService {
     private UserDTO mapToDTO(User user) {
         return UserDTO.builder()
                 .id(user.getId())
-                .name(user.getName())
+                .username(user.getUsername())
                 .userRole(user.getRole())
-                .createdAt(user.getCreatedAt())
-                .updatedAt(user.getUpdatedAt())
-                .devices(user.getDevices())
+                .devices(user.getLoans()
+                        .stream().map(Loan::getStockItem)
+                        .collect(Collectors.toSet()))
                 .build();
     }
 }

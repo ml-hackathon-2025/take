@@ -1,11 +1,11 @@
 package de.metalevel.take.service;
 
 import de.metalevel.take.dto.LoanDTO;
-import de.metalevel.take.model.Device;
 import de.metalevel.take.model.Loan;
+import de.metalevel.take.model.StockItem;
 import de.metalevel.take.model.User;
-import de.metalevel.take.repository.DeviceRepository;
 import de.metalevel.take.repository.LoanRepository;
+import de.metalevel.take.repository.StockItemRepository;
 import de.metalevel.take.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,16 +21,16 @@ import java.util.List;
 public class LoanService {
 
     private final LoanRepository loanRepository;
-    private final DeviceRepository deviceRepository;
+    private final StockItemRepository stockItemRepository;
     private final UserRepository userRepository;
 
     public LoanDTO borrow(Long deviceId, Long userId, Instant dueDate) {
-        // First, retrieve the device or throw if not found
-        Device device = deviceRepository.findById(deviceId)
+        // First, retrieve the stockItem or throw if not found
+        StockItem stockItem = stockItemRepository.findById(deviceId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Device not found"));
 
-        // Get maxWindowDays from device type
-        int maxWindowDays = device.getDeviceType().getMaxWindowDays();
+        // Get maxWindowDays from stockItem type
+        int maxWindowDays = stockItem.getDevice().getMaxWindowDays();
         Instant maxDueDate = Instant.now().plus(maxWindowDays, ChronoUnit.DAYS);
 
         // Validate dueDate against maxDueDate
@@ -39,7 +39,7 @@ public class LoanService {
                     "Due date exceeds maximum allowed rental period (" + maxWindowDays + " days)");
         }
 
-        if (!device.getAvailable()) {
+        if (!stockItem.getAvailable()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Device not available");
         }
 
@@ -47,11 +47,11 @@ public class LoanService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
         // Gerät blockieren
-        device.setAvailable(false);
-        deviceRepository.save(device);
+        stockItem.setAvailable(false);
+        stockItemRepository.save(stockItem);
 
         Loan loan = new Loan();
-        loan.setDevice(device);
+        loan.setStockItem(stockItem);
         loan.setUser(user);
         loan.setBorrowedDate(Instant.now());
         loan.setDueDate(dueDate);
@@ -62,14 +62,14 @@ public class LoanService {
         return mapToDTO(loan);
     }
 
-    public LoanDTO returnDevice(Long deviceId) {
+    public LoanDTO returnDevice(Long stockItemId) {
         Loan loan = loanRepository.findAll().stream()
-                .filter(l -> !l.isReturned() && l.getDevice().getId().equals(deviceId))
+                .filter(l -> !l.getReturned() && l.getStockItem().getId().equals(stockItemId))
                 .findFirst()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Active loan not found"));
 
         loan.setReturned(true);
-        loan.getDevice().setAvailable(true);
+        loan.getStockItem().setAvailable(true);
 
         loanRepository.save(loan);
         return mapToDTO(loan);
@@ -79,7 +79,7 @@ public class LoanService {
         List<Loan> loans = switch (status) {
             case "active" -> loanRepository.findByReturnedFalse();
             case "overdue" -> loanRepository.findAll().stream()
-                    .filter(l -> !l.isReturned() && l.getDueDate().isBefore(Instant.now()))
+                    .filter(l -> !l.getReturned() && l.getDueDate().isBefore(Instant.now()))
                     .toList();
             default -> loanRepository.findAll();
         };
@@ -90,11 +90,11 @@ public class LoanService {
     private LoanDTO mapToDTO(Loan loan) {
         return LoanDTO.builder()
                 .id(loan.getId())
-                .deviceId(loan.getDevice().getId())
+                .stockItemId(loan.getStockItem().getId())
                 .userId(loan.getUser().getId())
                 .borrowedDate(loan.getBorrowedDate())
                 .dueDate(loan.getDueDate())
-                .returned(loan.isReturned())
+                .returned(loan.getReturned())
                 .build();
     }
 }
