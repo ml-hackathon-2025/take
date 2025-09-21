@@ -14,6 +14,8 @@ import UserList from "../components/UserList";
 import UserForm from "../components/UserForm";
 import LoanList from "../components/LoanList";
 import LoanForm from "../components/LoanForm";
+import ReturnForm from "../components/ReturnForm";
+import UserLoans from "../components/UserLoans";
 import DeviceTypeList from "../components/DeviceTypeList";
 
 export const router = createBrowserRouter(
@@ -36,7 +38,9 @@ export const router = createBrowserRouter(
                 { path: "/users/new", element: <UserForm /> },
                 { path: "/loans", element: <LoanList /> },
                 { path: "/loans/new", element: <LoanForm /> },
-                { path: "/device-types", element: <DeviceTypeList /> }
+                { path: "/device-types", element: <DeviceTypeList /> },
+                { path: "/users/:id/loans", element: <UserLoans /> },
+                { path: "/loans/return", element: <ReturnForm /> }
             ],
         },
     ],
