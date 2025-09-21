@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router";
 import AppShell from "../components/AppShell";
+import { RequireAuth } from "../auth/RequireAuth";
 import DashboardPage from "../features/dashboard/Dashboard";
 import DeviceDetailPage from "../features/device/DeviceDetailPage";
 import InventoryPage from "../features/inventory/InventoryPage";
@@ -8,12 +9,21 @@ import NotFoundPage from "../features/notfound/NotFoundPage";
 import ScanPage from "../features/scan/ScanPage";
 import UserPage from "../features/user/UserPage";
 import RouteErrorBoundary from "./RouteErrorBoundary";
+import AuthCallback from "../auth/AuthCallback";
 
 export const router = createBrowserRouter(
     [
         {
+            path: "/auth/callback",
+            element: <AuthCallback />,
+        },
+        {
             path: "/",
-            element: <AppShell />,
+            element: (
+                <RequireAuth>
+                    <AppShell />
+                </RequireAuth>
+            ),
             errorElement: <RouteErrorBoundary />,
             children: [
                 { index: true, element: <DashboardPage /> },
