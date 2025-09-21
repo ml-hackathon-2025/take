@@ -13,24 +13,32 @@ const InventoryPage: React.FC = () => {
                                 <UnifiedTable
                                     columns={[
                                         {
-                                            header: 'Name',
-                                            render: (device) => <Link className="underline" to={`/devices/${device.id}`}>{device.name}</Link>
+                                            header: 'SKU',
+                                            render: (stockItem) => <Link className="underline" to={`/devices/${stockItem.id}`}>{stockItem.sku}</Link>
+                                        },
+                                        {
+                                            header: 'Device Type',
+                                            render: (stockItem) => stockItem.device?.name ?? `Device ${stockItem.deviceId}`
                                         },
                                         {
                                             header: 'Brand',
-                                            render: (device) => device.brand ?? '—'
+                                            render: (stockItem) => stockItem.device?.brand ?? stockItem.device?.description ?? '—'
                                         },
                                         {
                                             header: 'Status',
-                                            render: (device) => device.available ? 'Available' : 'Borrowed'
+                                            render: (stockItem) => stockItem.userId ? 'Borrowed' : 'Available'
                                         },
                                         {
-                                            header: 'Due',
-                                            render: (device) => device.dueDate ?? '—'
+                                            header: 'Borrowed by',
+                                            render: (stockItem) => stockItem.user?.username ?? (stockItem.userId ? stockItem.userId : '—')
+                                        },
+                                        {
+                                            header: 'Due Date',
+                                            render: (stockItem) => stockItem.dueDate ? new Date(stockItem.dueDate).toLocaleDateString() : '—'
                                         }
                                     ]}
                                     data={data}
-                                    emptyText="No items"
+                                    emptyText="No stock items found"
                                 />
                         </div>
                 );

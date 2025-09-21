@@ -1,45 +1,39 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { Device, ID, User } from "../types";
-
-const api = {
-    listDevices: async (): Promise<Device[]> => fetch('/api/devices').then(resp => resp.json()),
-    listUsers: async (): Promise<User[]> => fetch('/api/users').then(resp => resp.json()),
-    borrow: async (payload: { deviceId: ID; userId: ID; dueDate: string }) =>
-        fetch('/api/loans/borrow', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        }).then(resp => {
-            if (!resp.ok) throw new Error('Borrow failed');
-            return resp.json();
-        }),
-    returnDevice: async (deviceId: ID) =>
-        fetch('/api/loans/return', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ deviceId })
-        }).then(resp => {
-            if (!resp.ok) throw new Error('Return failed');
-            return resp.json();
-        }),
-};
+import { getDevices } from "../services/deviceService";
+import { getUsers } from "../services/userService";
+import { borrowDevice, returnDevice } from "../services/loanService";
 
 export function useDevices() {
-    return useQuery({ queryKey: ['devices'], queryFn: api.listDevices });
+    return useQuery({ 
+        queryKey: ['devices'], 
+        queryFn: getDevices 
+    });
 }
+
 export function useUsers() {
-    return useQuery({ queryKey: ['users'], queryFn: api.listUsers });
+    return useQuery({ 
+        queryKey: ['users'], 
+        queryFn: getUsers 
+    });
 }
 
 export function useBorrowReturn() {
     const qc = useQueryClient();
     const borrow = useMutation({
-        mutationFn: api.borrow,
-        onSuccess: () => qc.invalidateQueries({ queryKey: ['devices'] }),
+        mutationFn: (payload: { deviceId: number; userId: string; dueDate: string }) => 
+            borrowDevice(payload),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ['devices'] });
+            qc.invalidateQueries({ queryKey: ['loans'] });
+        },
     });
     const ret = useMutation({
-        mutationFn: api.returnDevice,
-        onSuccess: () => qc.invalidateQueries({ queryKey: ['devices'] }),
+        mutationFn: (deviceId: number) => 
+            returnDevice({ deviceId }),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ['devices'] });
+            qc.invalidateQueries({ queryKey: ['loans'] });
+        },
     });
     return { borrow, ret };
 }

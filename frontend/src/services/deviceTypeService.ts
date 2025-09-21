@@ -1,24 +1,5 @@
-type DeviceTypePayload = {
-  name: string;
-  maxWindowDays: number;
-  categoryId: number;
-};
+// This file is deprecated - device types are now handled in deviceService.ts
+// The API endpoint is /api/device-type and returns DeviceDTO[]
+// Use getDeviceTypes(), getDeviceTypeById(), createDeviceType() from deviceService instead
 
-export async function getDeviceTypes() {
-    const res = await fetch("/api/device-types");
-    return res.json();
-  }
-  
-  export async function getDeviceTypeById(id: number) {
-    const res = await fetch(`/api/device-types/${id}`);
-    return res.json();
-  }
-  
-  export async function createDeviceType(type: DeviceTypePayload) {
-    const res = await fetch("/api/device-types", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(type),
-    });
-    return res.json();
-  }
+export * from './deviceService';

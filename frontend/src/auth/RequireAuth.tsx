@@ -11,7 +11,6 @@ export function RequireAuth({ children }: { children: ReactNode }) {
     (async () => {
       console.log("RequireAuth: Checking user authentication");
       const u = await getUser();
-      console.log("RequireAuth: User:", u ? "exists" : "null", u?.expired ? "expired" : "valid");
       
       if (u && !u.expired) {
         setReady("ok");

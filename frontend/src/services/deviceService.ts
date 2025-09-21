@@ -1,48 +1,83 @@
-type Device = {
-  id: number;
-  name: string;
-  brand: string;
-  available: boolean;
+import httpInstance from "./httpInstance";
+import type { ID } from "../types";
+
+// Based on OpenAPI StockItemDTO
+export type StockItem = {
+  id: number; // int64 in API
+  sku: string;
+  deviceId: number; // int32 in API  
+  userId?: string; // Optional, present when borrowed
+  available?: boolean; // Computed field for UI
+  device?: DeviceType; // Populated by joins
+  user?: User; // Populated when borrowed
   borrowedDate?: string;
   dueDate?: string;
-  qrLink?: string;
-  deviceTypeId?: number;
-  userId?: number;
 };
 
-type DevicePayload = {
+// Based on OpenAPI DeviceDTO
+export type DeviceType = {
+  id: number; // int32 in API
   name: string;
-  brand: string;
-  deviceTypeId: number;
-  qrLink?: string;
+  maxWindowDays: number;
+  description?: string;
+  brand?: string; // Not in API spec but might be added
 };
 
-type DeviceUpdate = Partial<Pick<Device, "name" | "brand" | "qrLink">>;
+// Based on OpenAPI UserDTO
+export type User = {
+  id: string;
+  username: string;
+  userRole: 'ADMIN' | 'USER';
+  createdAt: string;
+  updatedAt: string;
+};
 
-export async function getDevices(): Promise<Device[]> {
-  const res = await fetch("/api/devices");
-  return res.json();
+export type StockItemPayload = {
+  sku: string;
+  deviceId: number;
+  userId?: string;
+};
+
+export type StockItemUpdate = Partial<Pick<StockItem, "sku" | "deviceId" | "userId">>;
+
+// Get all stock items (individual devices)
+export async function getDevices(): Promise<StockItem[]> {
+  const response = await httpInstance.get<StockItem[]>("/api/devices");
+  return response.data;
 }
 
-export async function getDeviceById(id: number): Promise<Device> {
-  const res = await fetch(`/api/devices/${id}`);
-  return res.json();
+// Get specific stock item by ID
+export async function getDeviceById(id: ID): Promise<StockItem> {
+  const response = await httpInstance.get<StockItem>(`/api/devices/${id}`);
+  return response.data;
 }
 
-export async function createDevice(device: DevicePayload): Promise<Device> {
-  const res = await fetch("/api/devices", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(device),
-  });
-  return res.json();
+// Create new stock item
+export async function createDevice(device: StockItemPayload): Promise<StockItem> {
+  const response = await httpInstance.post<StockItem>("/api/devices", device);
+  return response.data;
 }
 
-export async function updateDevice(id: number, update: DeviceUpdate): Promise<Device> {
-  const res = await fetch(`/api/devices/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(update),
-  });
-  return res.json();
+// Update stock item
+export async function updateDevice(id: ID, update: StockItemUpdate): Promise<StockItem> {
+  const response = await httpInstance.patch<StockItem>(`/api/devices/${id}`, update);
+  return response.data;
+}
+
+// Get all device types
+export async function getDeviceTypes(): Promise<DeviceType[]> {
+  const response = await httpInstance.get<DeviceType[]>("/api/device-type");
+  return response.data;
+}
+
+// Get specific device type by ID
+export async function getDeviceTypeById(id: ID): Promise<DeviceType> {
+  const response = await httpInstance.get<DeviceType>(`/api/device-type/${id}`);
+  return response.data;
+}
+
+// Create new device type
+export async function createDeviceType(type: Omit<DeviceType, 'id'>): Promise<DeviceType> {
+  const response = await httpInstance.post<DeviceType>("/api/device-type", type);
+  return response.data;
 }

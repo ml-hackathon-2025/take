@@ -1,53 +1,37 @@
+import httpInstance from "./httpInstance";
+import type { Loan } from "./loanService";
+
+// Based on OpenAPI UserDTO
 export type User = {
-  id: number;
-  name: string;
-  userRole: string;
-  createdAt: string;
-  updatedAt: string;
+  id: string;
+  username: string;
+  userRole: 'ADMIN' | 'USER';
+  createdAt: string; // date-time format
+  updatedAt: string; // date-time format
+  devices?: any[]; // StockItem array but not used much in UI
 };
 
 export type UserPayload = {
-  name: string;
-  userRole: string;
+  username: string;
+  userRole: 'ADMIN' | 'USER';
 };
-
-export type Loan = {
-  id: number;
-  deviceId: number;
-  userId: number;
-  borrowedDate: string;
-  dueDate: string;
-  returned: boolean;
-};
-
-async function handleResponse<T>(res: Response): Promise<T> {
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`API error ${res.status}: ${text}`);
-  }
-  return res.json() as Promise<T>;
-}
 
 export async function getUsers(): Promise<User[]> {
-  const res = await fetch("/api/users");
-  return handleResponse<User[]>(res);
+  const response = await httpInstance.get<User[]>("/api/users");
+  return response.data;
 }
 
-export async function getUserById(id: number): Promise<User> {
-  const res = await fetch(`/api/users/${id}`);
-  return handleResponse<User>(res);
+export async function getUserById(id: string): Promise<User> {
+  const response = await httpInstance.get<User>(`/api/users/${id}`);
+  return response.data;
 }
 
 export async function createUser(user: UserPayload): Promise<User> {
-  const res = await fetch("/api/users", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(user),
-  });
-  return handleResponse<User>(res);
+  const response = await httpInstance.post<User>("/api/users", user);
+  return response.data;
 }
 
-export async function getUserLoans(id: number): Promise<Loan[]> {
-  const res = await fetch(`/api/users/${id}/loans`);
-  return handleResponse<Loan[]>(res);
+export async function getUserLoans(id: string): Promise<Loan[]> {
+  const response = await httpInstance.get<Loan[]>(`/api/users/${id}/loans`);
+  return response.data;
 }
